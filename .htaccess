@@ -1,0 +1,106 @@
+# ------------------------------------------------------------------------------------------
+#
+# ### PWA Bunga! .htaccess
+#       
+#     This htaccess configuration file is used by the Apache web server, 
+#     it improves performance, security and manages redirects
+#
+#     Documentation of .htaccess
+#     --------------------------
+#     https://pwabunga.com/documentation/starter.html#htaccess
+#                                   
+# ------------------------------------------------------------------------------------------
+
+# ------------------------------------------------------------------------------------------
+#
+# ### PERFORMANCE
+#                                   
+# ------------------------------------------------------------------------------------------
+
+# ----------------------------------------------------------------------
+# ## Cache-Control Headers                                              
+# ----------------------------------------------------------------------
+
+<IfModule mod_headers.c>
+    <FilesMatch "\.(ico|jpe?g|png|gif|svg|css|webp|woff2|gz)$">
+        Header set Cache-Control "max-age=2592000, public"
+    </FilesMatch>
+    <FilesMatch "\.(js)$">
+        Header set Cache-Control "max-age=2592000, private"
+    </FilesMatch>
+    <filesMatch "\.(html|htm)$">
+        Header set Cache-Control "max-age=7200, public"
+    </filesMatch>
+    <FilesMatch "\.(pl|php|cgi|spl|scgi|fcgi)$">
+        Header unset Cache-Control
+    </FilesMatch>
+</IfModule>
+
+# ----------------------------------------------------------------------
+# ## Deflate Outpout filters                                          
+# ----------------------------------------------------------------------
+
+SetOutputFilter DEFLATE
+AddOutputFilterByType DEFLATE "application/atom+xml" "application/javascript" "application/json" "application/ld+json" "application/manifest+json" "application/rdf+xml" "application/rss+xml" "application/schema+json" "application/vnd.geo+json" "application/vnd.ms-fontobject" "application/x-font-ttf" "application/x-javascript" "application/x-web-app-manifest+json" "application/xhtml+xml" "application/xml" "font/eot" "font/opentype" "image/bmp" "image/svg+xml" "image/vnd.microsoft.icon" "image/x-icon" "text/cache-manifest" "text/css" "text/html" "text/javascript" "text/plain" "text/vcard" "text/vnd.rim.location.xloc" "text/vtt" "text/x-component" "text/x-cross-domain-policy" "text/xml"
+
+# ------------------------------------------------------------------------------------------
+#
+# ### SECURITY 
+#                                   
+# ------------------------------------------------------------------------------------------
+
+# ----------------------------------------------------------------------
+# ## http:// to https://                                       
+# ----------------------------------------------------------------------
+
+<IfModule mod_rewrite.c>
+	RewriteCond %{HTTPS} off
+	RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</IfModule>
+
+
+# ----------------------------------------------------------------------
+# ## Disables directory indexing                           
+# ----------------------------------------------------------------------
+
+Options All -Indexes
+
+# ----------------------------------------------------------------------
+# ## Protect hidden files from being viewed                               
+# ----------------------------------------------------------------------
+
+<files .*>
+    order allow,deny
+    deny from all
+</files>
+
+# ------------------------------------------------------------------------------------------
+#
+# ### Redirect 
+#                                   
+# ------------------------------------------------------------------------------------------
+
+# ----------------------------------------------------------------------
+# ## Errors redirect                                  
+# ----------------------------------------------------------------------
+
+ErrorDocument 403 https://demo.pwabunga.com/403.html
+ErrorDocument 404 https://demo.pwabunga.com/404.html
+
+# ----------------------------------------------------------------------
+# ## domain.com to www.domain.com                                      
+# ----------------------------------------------------------------------
+
+# <IfModule mod_rewrite.c>
+#   RewriteCond %{HTTP_HOST} !^www\..+$ [NC]
+#   RewriteRule ^ https://www.%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+# </IfModule>
+
+# ----------------------------------------------------------------------
+# ## www.domain.com to domain.com                                     
+# ----------------------------------------------------------------------
+
+<IfModule mod_rewrite.c>
+  RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+  RewriteRule ^ https://%1%{REQUEST_URI} [R=301,L]
+</IfModule>
